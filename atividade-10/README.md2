@@ -1,0 +1,15 @@
+"PLAY WITH DOCKER
+(LucasCostaMrq)
+vi docker-compose.yml
+(colar .yml (tem nesse README.md)
+:wq
+cat docker-compose.yml (para checkar o código)
+docker login
+(criar portas e baixar ambiente de desenvolvimento)
+docker-compose up -d
+vi arquivo.py
+(colar o código .py)
+:wq
+pip install mysql-connector-python
+vi python arquivo.py
+:wq"
