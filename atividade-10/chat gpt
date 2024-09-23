@@ -1,0 +1,73 @@
+Aqui está a explicação do que cada parte do seu código faz:
+
+1. **`import mysql.connector`**  
+   Importa o módulo `mysql.connector`, que permite interagir com um banco de dados MySQL no Python.
+
+2. **`connect = mysql.connector.connect(...)`**  
+   Cria uma conexão com o banco de dados MySQL. Os parâmetros como `user`, `password`, `host` e `database` são usados para especificar o usuário, senha, host (neste caso, `localhost`), e o nome do banco de dados.
+
+3. **`cursor = connect.cursor()`**  
+   Cria um cursor, que é usado para executar comandos SQL no banco de dados.
+
+4. **`tabelas = ["TB_MATRICULA", "TB_ALUNO", "TB_PROFESSOR", "TB_DISCIPLINA"]`**  
+   Define uma lista com o nome das tabelas que serão manipuladas.
+
+5. **`cursor.execute(...)`**  
+   Executa comandos SQL no banco de dados. Abaixo estão os comandos que você executa com `cursor.execute()`:
+
+   - **`CREATE TABLE IF NOT EXISTS TB_ALUNO(...)`**  
+     Cria a tabela `TB_ALUNO` com um `id_aluno` como chave primária e `nomeAluno` como uma string que não pode ser nula.
+   
+   - **`CREATE TABLE IF NOT EXISTS TB_PROFESSOR(...)`**  
+     Cria a tabela `TB_PROFESSOR` com um `id_prof` como chave primária e colunas `nomeProf` e `disciplina` (ambas strings não nulas).
+   
+   - **`CREATE TABLE IF NOT EXISTS TB_DISCIPLINA(...)`**  
+     Cria a tabela `TB_DISCIPLINA` com um `id_disc` como chave primária, `nomeDisc` (string) e `horas` (inteiro).
+   
+   - **`CREATE TABLE IF NOT EXISTS TB_MATRICULA(...)`**  
+     Cria a tabela `TB_MATRICULA` com um `id_matricula` auto incrementado como chave primária, além de chaves estrangeiras que referenciam as tabelas `TB_ALUNO`, `TB_PROFESSOR` e `TB_DISCIPLINA`. Também inclui as colunas `notaN1`, `notaN2` e `faltas`.
+
+6. **`connect.commit()`**  
+   Confirma todas as alterações feitas no banco de dados até este ponto.
+
+7. **`for item in range(len(tabelas)):`**  
+   Um loop que percorre a lista de tabelas e executa dois comandos para cada tabela:
+   
+   - **`DELETE FROM {tabelas[item]};`**  
+     Remove todos os registros de cada tabela.
+   
+   - **`ALTER TABLE {tabelas[item]} AUTO_INCREMENT = 1;`**  
+     Reinicia o valor de `AUTO_INCREMENT` para `1` nas tabelas.
+
+   Após cada alteração, ele faz um `commit()` para salvar as mudanças.
+
+8. **`cursor.execute(...) INSERT INTO TB_ALUNO(...)`**  
+   Insere três alunos (Lucas, Sabrinna, Vinicius) na tabela `TB_ALUNO`.
+
+9. **`cursor.execute(...) INSERT INTO TB_PROFESSOR(...)`**  
+   Insere três professores (Prof Alexandre, Prof Wendell, Prof Alisson) na tabela `TB_PROFESSOR`.
+
+10. **`cursor.execute(...) INSERT INTO TB_DISCIPLINA(...)`**  
+    Insere três disciplinas (Física, Redes de Computadores, MFDS) na tabela `TB_DISCIPLINA`.
+
+11. **`cursor.execute(...) INSERT INTO TB_MATRICULA(...)`**  
+    Insere matrículas para os alunos, cada uma com notas e faltas específicas.
+
+12. **`cursor.execute(...) SELECT A.nomeAluno, M.notaN1, M.notaN2, M.faltas FROM TB_MATRICULA M JOIN TB_ALUNO A...`**  
+    Faz uma junção entre as tabelas `TB_MATRICULA` e `TB_ALUNO` para obter o nome do aluno, as notas N1 e N2, e o número de faltas de cada matrícula.
+
+13. **`matriculas = cursor.fetchall()`**  
+    Busca todos os resultados da consulta e armazena-os na variável `matriculas`.
+
+14. **`for matricula in matriculas:`**  
+    Um loop que percorre cada matrícula retornada pela consulta e verifica o status de aprovação:
+
+    - Calcula a média das notas e verifica se ela é menor que 6 para determinar se o aluno foi reprovado por nota.
+    - Verifica se o número de faltas é maior que 10 para indicar reprovação por falta.
+    - Caso contrário, o aluno é aprovado.
+
+15. **`cursor.close()`**  
+    Fecha o cursor para liberar os recursos.
+
+16. **`connect.close()`**  
+    Fecha a conexão com o banco de dados.
