@@ -1,0 +1,80 @@
+import mysql.connector
+
+connect = mysql.connector.connect(
+    user="myuser",
+    password="mypassword",
+    host="localhost",
+    database="mydatabase"
+)
+
+cursor = connect.cursor()
+
+tabelas = ["TB_MATRICULA", "TB_ALUNO", "TB_PROFESSOR", "TB_DISCIPLINA"]
+
+# ... (rest of the code remains the same)
+
+# New functionalities
+
+# 1. Listar todos os aluno reprovados
+cursor.execute("""
+    SELECT A.nomeAluno, D.nomeDisc, P.nomeProf, M.notaN1, M.notaN2, (M.notaN1 + M.notaN2)/2 AS media, M.faltas,
+           CASE
+               WHEN (M.notaN1 + M.notaN2)/2 < 6 THEN 'Reprovado por Média'
+               WHEN M.faltas > 10 THEN 'Reprovado por Falta'
+           END AS status
+    FROM TB_MATRICULA M
+    JOIN TB_ALUNO A ON M.id_aluno = A.id_aluno
+    JOIN TB_DISCIPLINA D ON M.id_disc = D.id_disc
+    JOIN TB_PROFESSOR P ON M.id_prof = P.id_prof
+    WHERE (M.notaN1 + M.notaN2)/2 < 6 OR M.faltas > 10
+""")
+
+reprovados = cursor.fetchall()
+
+print("Alunos Reprovados:")
+for reprovado in reprovados:
+    print(f"Nome do Aluno: {reprovado[0]}, Nome da Disciplina: {reprovado[1]}, Nome do Professor: {reprovado[2]}, N1: {reprovado[3]}, N2: {reprovado[4]}, Média: {reprovado[5]}, Faltas: {reprovado[6]}, Status: {reprovado[7]}")
+
+# 2. Listar todos os alunos aprovados
+cursor.execute("""
+    SELECT A.nomeAluno, D.nomeDisc, P.nomeProf, M.notaN1, M.notaN2, (M.notaN1 + M.notaN2)/2 AS media, M.faltas,
+           'Aprovado por Média' AS status
+    FROM TB_MATRICULA M
+    JOIN TB_ALUNO A ON M.id_aluno = A.id_aluno
+    JOIN TB_DISCIPLINA D ON M.id_disc = D.id_disc
+    JOIN TB_PROFESSOR P ON M.id_prof = P.id_prof
+    WHERE (M.notaN1 + M.notaN2)/2 >= 6 AND M.faltas <= 10
+""")
+
+aprovados = cursor.fetchall()
+
+print("\nAlunos Aprovados:")
+for aprovado in aprovados:
+    print(f"Nome do Aluno: {aprovado[0]}, Nome da Disciplina: {aprovado[1]}, Nome do Professor: {aprovado[2]}, N1: {aprovado[3]}, N2: {aprovado[4]}, Média: {aprovado[5]}, Faltas: {aprovado[6]}, Status: {aprovado[7]}")
+
+# 3. Listar a Quantidade de alunos aprovados
+cursor.execute("""
+    SELECT COUNT(*) AS quantidade
+    FROM TB_MATRICULA M
+    JOIN TB_ALUNO A ON M.id_aluno = A.id_aluno
+    WHERE (M.notaN1 + M.notaN2)/2 >= 6 AND M.faltas <= 10
+""")
+
+aprovados_count = cursor.fetchone()[0]
+
+print(f"\nQuantidade de Alunos Aprovados: {aprovados_count}")
+
+# 4. Listar a Quantidade de alunos reprovados
+cursor.execute("""
+    SELECT COUNT(*) AS quantidade
+    FROM TB_MATRICULA M
+    JOIN TB_ALUNO A ON M.id_aluno = A.id_aluno
+    WHERE (M.notaN1 + M.notaN2)/2 < 6 OR M.faltas > 10
+""")
+
+reprovados_count = cursor.fetchone()[0]
+
+print(f"Quantidade de Alunos Reprovados: {reprovados_count}")
+
+cursor.close()
+connect.close()
