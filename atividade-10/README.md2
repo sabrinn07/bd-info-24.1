@@ -12,5 +12,5 @@ vi arquivo.py
 (colar o código .py)
 :wq
 pip install mysql-connector-python
-vi python arquivo.py
+python arquivo.py
 :wq"
